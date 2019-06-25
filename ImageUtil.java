@@ -20,7 +20,7 @@ import net.sourceforge.jiu.filters.*;
  */
 public class ImageUtil {
 
-    public static Gray8Image readImage(String filename) {
+    /*public static Gray8Image readImage(String filename) {
         Gray8Image grayimage = null;
         RGB24Image redimage = null;
         try {
@@ -45,6 +45,26 @@ public class ImageUtil {
             System.exit(-1);
         }
 
+        return grayimage;
+    }*/
+    
+    public static Gray8Image ReadImage(String filename) {
+    	Gray8Image grayimage = null;
+        RGB24Image redimage = null;
+        redimage = ToolkitLoader.loadAsRgb24Image(filename);
+        
+        RGBToGrayConversion rgbtogray = new RGBToGrayConversion();
+        rgbtogray.setInputImage(redimage);
+        // adjust this if needed
+        // rgbtogray.setColorWeights(0.3f, 0.3f, 0.4f);
+        try {
+			rgbtogray.process();
+		} catch (MissingParameterException e) {
+			e.printStackTrace();
+		} catch (WrongParameterException e) {
+			e.printStackTrace();
+		}
+        grayimage = (Gray8Image)(rgbtogray.getOutputImage()); 
         return grayimage;
     }
     
