@@ -24,8 +24,8 @@ public class ProcessTemplate {
     public static void main(String args[]) {
         String filename = args[0];
 
-        Gray8Image grayimage = ImageUtil.readImage(filename);
-//        Gray8Image grayimage = ImageUtil.readImage("../../2circle-org-colored-whole.tif");
+        Gray8Image grayimage = ImageUtil.ReadImage(filename);
+//        Gray8Image grayimage = ImageUtil.ReadImage("../../2circle-org-colored-whole.tif");
         
         ImageManipulation image = new ImageManipulation(grayimage);
         image.locateConcentricCircles();

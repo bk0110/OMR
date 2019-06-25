@@ -56,24 +56,23 @@ public class SolidMark {
             }
         }
     }
-    
+
     public boolean isMark(int x, int y) {
         maxsim = -1;
         maxsimX = 0; maxsimY = 0;
-        for(int i = x - (int)(markradX * 1.2); i <= x + (int)(markradX * 1.2); i += (markradX / 5)) {
-            for(int j = y - (int)(markradY * 1.2); j <= y + (int)(markradY * 1.2); j += (markradX / 5)) {
+        for(double i = x - (int)(markradX * 1.2); i <= x + (int)(markradX * 1.2); i += (markradX / 5.0)) {
+            for(double j = y - (int)(markradY * 1.2); j <= y + (int)(markradY * 1.2); j +=(markradX/ 5.0)) {
                 double similarity = 1.0 - ConcentricCircle.templateXOR(
-                        grayimage, i - template.getWidth() / 2, y - template.getHeight() / 2, 
+                        grayimage, (int)(i - template.getWidth() / 2), y - template.getHeight() / 2, 
                         template, false);
                 if(maxsim == -1 || maxsim < similarity) {
                     maxsim = similarity;
-                    maxsimX = i;
-                    maxsimY = j + markradY * 2;     // XXX
+                    maxsimX = (int)i;
+                    maxsimY = (int)j + markradY * 2;     // XXX
                 }
             }
         }
-        
-//        System.out.println("--" + maxsim + ":" + maxsimX + "," + maxsimY + "->" + x + ":" + y);
+        //System.out.println("----" + maxsim + ":" + maxsimX + "," + maxsimY + "->" + x + ":" + y);
         if(maxsim > 0.55) {
             return true;
         }

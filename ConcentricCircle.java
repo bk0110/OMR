@@ -48,8 +48,9 @@ public class ConcentricCircle {
     public void process() {
         try {
             MedianFilter filter = new MedianFilter();
-            filter.setArea((int)((bigimgWidth / 1700 * 15) / 2) * 2 + 1, 
-                    (int)(bigimgHeight / 2339 * 15 / 2) * 2 + 1);
+            //filter.setArea((int)((bigimgWidth / 1700 * 15) / 2) * 2 + 1, 
+              //      (int)(bigimgHeight / 2339 * 15 / 2) * 2 + 1);
+            filter.setArea(1,1);
             filter.setInputImage(img);
             filter.process();
             img = (Gray8Image)(filter.getOutputImage());            

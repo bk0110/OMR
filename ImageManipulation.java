@@ -44,7 +44,7 @@ public class ImageManipulation {
         // 1700 x 2339 --> 426 x 560
         System.out.println("width = " + width + ": height = " + height);
         
-        scaleFactor = width / 340;      // 5 --> each mark becomes around 3 pixels wide
+        scaleFactor = 1;      // each mark becomes around 5 pixels wide
     }
     
     public void locateConcentricCircles() {
@@ -104,11 +104,17 @@ public class ImageManipulation {
         int nummarks = 0;
         for(int i = scaledtopleftX; i <= scaledbottomrightX; i++) {
             for(int j = scaledtopleftY + 20; j <= scaledbottomrightY - 20; j++) {
-                int val = (scaledImage.getSample(i, j) + scaledImage.getSample(i - 1, j) +
+                int val=(scaledImage.getSample(i, j) + scaledImage.getSample(i - 1, j) +
                         scaledImage.getSample(i + 1, j) + scaledImage.getSample(i, j - 1) +
                         scaledImage.getSample(i, j + 1) + scaledImage.getSample(i - 1, j - 1) +
                         scaledImage.getSample(i + 1, j + 1) + scaledImage.getSample(i + 1, j - 1) +
-                        scaledImage.getSample(i - 1, j + 1)) / 9;
+                        scaledImage.getSample(i - 1, j + 1)+scaledImage.getSample(i-2, j)+
+                        scaledImage.getSample(i-2, j+1)+scaledImage.getSample(i-2, j-1)+scaledImage.getSample(i-2, j+2)+
+                        scaledImage.getSample(i-2, j-2)+scaledImage.getSample(i+2, j)+scaledImage.getSample(i+2, j-1)+
+                        scaledImage.getSample(i+2, j+1)+scaledImage.getSample(i+2, j-2)+scaledImage.getSample(i+2, j+2)+
+                        scaledImage.getSample(i-1, j+2)+scaledImage.getSample(i-1, j-2)+scaledImage.getSample(i, j+2)+
+                        scaledImage.getSample(i, j-2)+scaledImage.getSample(i+1, j+2)+scaledImage.getSample(i+1, j-2))/9;
+                // width of the mark is about 5 pixels.
                 if(val < 200) {         // XXX
                     marks[nummarks++] = i * 1000 + j;
                 }
@@ -279,16 +285,16 @@ public class ImageManipulation {
     }
     
     private void sort(int[] marks, int[] ascTemplateLocations, int nummarks) {
-        int t;
+        int t,k;
         for(int i = 0; i < nummarks; i++) {
             for(int j = i + 1; j < nummarks; j++) {
                 if(marks[i] > marks[j]) {
                     t = marks[i];
                     marks[i] = marks[j];
                     marks[j] = t;
-                    t = ascTemplateLocations[i];
+                    k = ascTemplateLocations[i];
                     ascTemplateLocations[i] = ascTemplateLocations[j];
-                    ascTemplateLocations[j] = t;
+                    ascTemplateLocations[j] = k;
                 }
             }
         }        
@@ -310,7 +316,9 @@ public class ImageManipulation {
                     int k = 0;
                     while(k < numin) {
                         if(Math.abs(marks[j] / 1000 - cluster[k] / 1000) < 2 && Math.abs(marks[j] % 1000 - cluster[k] % 1000) < 2) {
-                            cluster[numin++] = marks[j];
+                            if(numin<50){
+                                cluster[numin++] = marks[j];
+                            }
                             System.out.print("Found j->" + marks[j] + ":");
                             marks[j] = -1;
                             j = i + 1;
@@ -346,8 +354,7 @@ public class ImageManipulation {
     private void rescale() {
         try {
             MedianFilter filter = new MedianFilter();
-            filter.setArea((int)((width / 1700 * 25) / 2) * 2 + 1, 
-                    (int)(height / 2339 * 25 / 2) * 2 + 1);
+            filter.setArea(1,1);
             filter.setInputImage(grayimage);
             filter.process();
             Gray8Image medianimage = (Gray8Image)(filter.getOutputImage());
@@ -504,7 +511,7 @@ public class ImageManipulation {
     
     public void searchMarks() {
         for(int i = 0; i < realNummarks; i++) {
-            System.out.print((char)ascTemplateLocations[i] + " ");
+            System.out.println(i + " : "+ (char)ascTemplateLocations[i]+ ":"+ ascTemplateLocations[i]);
         }
         System.out.println();
         
