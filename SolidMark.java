@@ -73,7 +73,7 @@ public class SolidMark {
             }
         }
         //System.out.println("----" + maxsim + ":" + maxsimX + "," + maxsimY + "->" + x + ":" + y);
-        if(maxsim > 0.55) {
+        if(maxsim > 0.70) {
             return true;
         }
         return false;
