@@ -44,7 +44,11 @@ public class ImageManipulation {
         // 1700 x 2339 --> 426 x 560
         System.out.println("width = " + width + ": height = " + height);
         
-        scaleFactor = 1;      // each mark becomes around 5 pixels wide
+        if(width<400) {
+        	scaleFactor=1;
+        }
+        else
+        	scaleFactor = width/400;
     }
     
     public void locateConcentricCircles() {
@@ -100,25 +104,39 @@ public class ImageManipulation {
         System.out.println("scaledtop: " + scaledtopleftX + ":" + scaledtopleftY);
         System.out.println("scaledbot: " + scaledbottomrightX + ":" + scaledbottomrightY);
 
-        int[] marks = new int[100 * 100 * 10];
+        int[] marks = new int[100 * 100 * 100];
         int nummarks = 0;
-        for(int i = scaledtopleftX; i <= scaledbottomrightX; i++) {
-            for(int j = scaledtopleftY + 20; j <= scaledbottomrightY - 20; j++) {
-                int val=(scaledImage.getSample(i, j) + scaledImage.getSample(i - 1, j) +
-                        scaledImage.getSample(i + 1, j) + scaledImage.getSample(i, j - 1) +
-                        scaledImage.getSample(i, j + 1) + scaledImage.getSample(i - 1, j - 1) +
-                        scaledImage.getSample(i + 1, j + 1) + scaledImage.getSample(i + 1, j - 1) +
-                        scaledImage.getSample(i - 1, j + 1)+scaledImage.getSample(i-2, j)+
-                        scaledImage.getSample(i-2, j+1)+scaledImage.getSample(i-2, j-1)+scaledImage.getSample(i-2, j+2)+
-                        scaledImage.getSample(i-2, j-2)+scaledImage.getSample(i+2, j)+scaledImage.getSample(i+2, j-1)+
-                        scaledImage.getSample(i+2, j+1)+scaledImage.getSample(i+2, j-2)+scaledImage.getSample(i+2, j+2)+
-                        scaledImage.getSample(i-1, j+2)+scaledImage.getSample(i-1, j-2)+scaledImage.getSample(i, j+2)+
-                        scaledImage.getSample(i, j-2)+scaledImage.getSample(i+1, j+2)+scaledImage.getSample(i+1, j-2))/9;
-                // width of the mark is about 5 pixels.
-                if(val < 200) {         // XXX
-                    marks[nummarks++] = i * 1000 + j;
-                }
-            }
+        int markwidth=(width/(400*scaleFactor))*5; ///this is equal to 5
+        int start,end,p,q;
+        start=height/6;
+        p=bottomrightX-(int)bottomrightpos.getBestFit().getApproxCircleOuterX()/2;
+        q=bottomrightY-(int)bottomrightpos.getBestFit().getApproxCircleOuterX()/2;
+        while(true) {
+        	if(grayimage.getSample(p,q)<175) {
+        		end=q;
+        		break;
+        	}
+        	q-=1;
+        }
+        for(int i = scaledtopleftX+(int)(topleftpos.getBestFit().getApproxCircleInnerX())/(2*scaleFactor); i <= scaledbottomrightX-(int)(bottomrightpos.getBestFit().getApproxCircleInnerX())/(2*scaleFactor); i++) {
+             for(int j=scaledtopleftY + (int)(topleftpos.getBestFit().getApproxCircleOuterX())/(2*scaleFactor); j <= scaledbottomrightY - (int)(bottomrightpos.getBestFit().getApproxCircleOuterX())/(2*scaleFactor); j++) {    	
+            	  int val=0,count=0;
+            	  if(j>=start/scaleFactor && j<=end/scaleFactor) {
+	            	  for(int x=i-markwidth/2;x<=i+markwidth/2;x++){
+	            	  	for(int y=j-markwidth/2;y<=j+markwidth/2;y++){
+                            double dist = Math.sqrt((i - x) * (i-x)+ (j - y)* (j - y));
+	                        if(dist <= markwidth/2.0) {
+	                        	val+=scaledImage.getSample(x,y);
+	                        	count+=1;
+	                        	}
+	            	  		}
+	            	  	}
+	            	  val/=count;
+	            	  if(val < 17.5*scaleFactor+7.5) {         // XXX
+	                      marks[nummarks++] = i * 1000 + j;
+	                 }
+            	  }
+             }
         }
 
         System.out.println("nummarks = " + nummarks);
